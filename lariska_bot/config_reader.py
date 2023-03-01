@@ -4,8 +4,12 @@ from typing import Optional
 
 class Settings(BaseSettings):
     bot_token: SecretStr
-    fsm_mode: str
-    redis: Optional[RedisDsn]
+    bot_fsm_storage: str
+    redis_dsn: Optional[RedisDsn]
+    app_host: Optional[str] = '0.0.0.0'
+    app_port: Optional[int] = 8000
+    webhook_domain: Optional[str]
+    webhook_path: Optional[str]
 
     @validator('fsm_mode')
     def fsm_type_check(cls, v):
@@ -17,6 +21,12 @@ class Settings(BaseSettings):
     def skip_validating_redis(cls, v, values):
         if values['fsm_mode'] == 'redis' and v is None:
             raise ValueError('Redis config is missing, though fsm_type is "redis"')
+        return v
+
+    @validator('webhook_path')
+    def validate_webhook_path(cls, v, value):
+        if value['webhook_domain'] and not v:
+            raise ValueError('Webhook path is missing')
         return v
 
     class Config:
