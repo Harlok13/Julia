@@ -1,9 +1,10 @@
-from aiogram import Router, types, Dispatcher, F
+from aiogram import Router, types, F, Bot
 from aiogram.filters import Text
 from aiogram.types import Message
 
 from lariska_bot.handlers.handlers_data.messages import *
 from lariska_bot.keyboards.lybrary_inline_kb import *
+from lariska_bot.text_recogn_start import *
 
 r = Router()
 
@@ -74,8 +75,13 @@ async def lariska_bot_reply(message: Message):
 #         await message.reply(random.choice(user_dict['greetings']))
 
 
-async def photo_reply(message: types.Message):
-    await message.reply('Красивенько 😍')
+async def photo_reply(message: types.Message, bot: Bot):
+    await bot.download(message.photo[-1].file_id, 'img.jpg')
+    model = keras.models.load_model('emnist_letters.h5')
+    await bot.download(message.photo[-1].file_id, 'img.jpg')
+    s_out = await img_to_str(model, "hello_world.png")
+    if s_out.isalnum():
+        await message.reply('Красивенько 😍')
 
 
 def register_message_handlers(r: Router):
