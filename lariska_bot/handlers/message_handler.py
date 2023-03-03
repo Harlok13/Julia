@@ -78,10 +78,10 @@ async def lariska_bot_reply(message: Message):
 async def photo_reply(message: types.Message, bot: Bot):
     await bot.download(message.photo[-1].file_id, 'img.jpg')
     model = keras.models.load_model('emnist_letters.h5')
-    await bot.download(message.photo[-1].file_id, 'img.jpg')
-    s_out = await img_to_str(model, "hello_world.png")
+    s_out = await img_to_str(model, "img.jpg")
     if s_out.isalnum():
         await message.reply('Красивенько 😍')
+    await message.reply('Красивенько 😍')
 
 
 def register_message_handlers(r: Router):
