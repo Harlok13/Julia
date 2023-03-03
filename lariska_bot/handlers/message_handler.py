@@ -81,7 +81,6 @@ async def photo_reply(message: types.Message, bot: Bot):
     s_out = await img_to_str(model, "img.jpg")
     if s_out.isalnum():
         await message.reply('Красивенько 😍')
-    await message.reply('Красивенько 😍')
 
 
 def register_message_handlers(r: Router):
