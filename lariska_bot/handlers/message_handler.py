@@ -3,8 +3,15 @@ from aiogram.filters import Text
 from aiogram.types import Message
 
 from lariska_bot.handlers.handlers_data.messages import *
+from lariska_bot.keyboards.lybrary_inline_kb import *
 
 r = Router()
+
+
+async def get_library(message: types.Message):
+    await message.answer(text='Выберите категорию:',
+                         reply_markup=CAT_CHOICE_MENU)
+    await message.delete()
 
 
 async def skirmish_reply(message: Message):
@@ -17,9 +24,6 @@ async def call_names_reply(message: Message):
 
 async def attack_reply(message: Message):
     await message.reply(get_attack_reply())
-
-
-dp = Dispatcher()
 
 
 async def hello_where_to_reply(message: Message):
@@ -75,6 +79,8 @@ async def photo_reply(message: types.Message):
 
 
 def register_message_handlers(r: Router):
+    r.message.register(get_library, F.text == 'БИБЛИОТЕКА')
+
     r.message.register(skirmish_reply, Text(contains=['говно'], ignore_case=True))
     r.message.register(call_names_reply, Text(contains=['лариска', 'дура'], ignore_case=True))
     r.message.register(attack_reply, Text(contains=['лариска', 'фас'], ignore_case=True))
