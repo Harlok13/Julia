@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from dotenv import load_dotenv, find_dotenv
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
@@ -12,8 +13,7 @@ from aioredis import Redis
 
 from lariska_bot.handlers.message_handler import register_message_handlers
 from lariska_bot.handlers.command_handler import register_command_handler
-from dotenv import load_dotenv, find_dotenv
-
+from lariska_bot.handlers.library_cb_handler import register_library_cb_handlers
 
 async def main():
     logging.basicConfig(
@@ -36,6 +36,7 @@ async def main():
     # register router
     register_command_handler(dp)
     register_message_handlers(dp)
+    register_library_cb_handlers(dp)
 
     # dp.message.register(hell_reply, Text(contains=['привет'], ignore_case=True))
 
