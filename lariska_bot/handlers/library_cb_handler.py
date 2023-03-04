@@ -3,21 +3,11 @@ import logging
 from aiogram import types, F, Router
 from aioredis import Redis
 
+from lariska_bot.filters.library_filter import book_filter
 from lariska_bot.keyboards.lybrary_inline_kb import *
 from lariska_bot.keyboards.reply_keyboard import *
 
 redis = Redis()
-r = Router()
-
-redis_prev = None
-
-
-def book_filter(callback: types.CallbackQuery):
-    """Фильтр книг для redis."""
-    try:
-        return True if int(callback.data) else 'да что угодно'
-    except ValueError:
-        return False
 
 
 async def callback_get_prev(callback: types.CallbackQuery):
