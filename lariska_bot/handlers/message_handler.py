@@ -4,7 +4,7 @@ from aiogram.types import Message
 
 from lariska_bot.handlers.handlers_data.messages import *
 from lariska_bot.keyboards.lybrary_inline_kb import *
-from lariska_bot.text_recogn_start import *
+# from lariska_bot.text_recogn_start import *
 
 r = Router()
 
@@ -16,46 +16,45 @@ async def get_library(message: types.Message):
 
 
 async def skirmish_reply(message: Message):
-    await message.reply(dont_skirmish())
+    await message.reply(user_mes['dont_skirmish'])
 
 
 async def call_names_reply(message: Message):
-    await message.reply(dont_call_names())
+    await message.reply(user_mes['dont_call_names'])
 
 
 async def attack_reply(message: Message):
-    await message.reply(get_attack_reply())
+    await message.reply(user_mes['get_attack_reply'])
 
 
 async def hello_where_to_reply(message: Message):
-    await message.reply(get_hello())
-    await message.answer(get_start_here())
-    await message.answer(get_start_video())
+    await message.reply(user_mes['get_hello'])
+    await message.answer(user_mes['get_start_here'])
+    await message.answer(user_mes['get_start_video'])
     await message.answer('Там много полезных ссылок под видео.')
 
 
 async def hello_reply(message: Message):
-    # await message.reply(get_hello())
-    await message.reply('на связи')
+    await message.reply(user_mes['get_hello'])
 
 
 async def where_to_begin(message: Message):
-    await message.reply(get_start_here())
-    await message.answer(get_start_video())
-    await message.answer('Там много полезных ссылок под видео.')
+    await message.reply(user_mes['get_start_here'])
+    await message.answer(user_mes['get_start_video'])
+    await message.answer(user_mes['about_links'])
 
 
 async def our_repository_reply(message: Message):
-    await message.reply(get_repo())
+    await message.reply(user_mes['get_repo'])
 
 
 async def our_repo_reply(message: Message):
-    await message.reply(get_repo())
+    await message.reply(user_mes['get_repo'])
 
 
 async def lariska_bot_reply(message: Message):
-    await message.reply(get_lariska_bot())
-    await message.answer(get_forks())
+    await message.reply(user_mes['get_lariska_bot'])
+    await message.answer(user_mes['get_forks'])
 
 
 # aiogram2
@@ -78,9 +77,13 @@ async def lariska_bot_reply(message: Message):
 async def photo_reply(message: types.Message, bot: Bot):
     await bot.download(message.photo[-1].file_id, 'img.jpg')
     model = keras.models.load_model('emnist_letters.h5')
-    s_out = await img_to_str(model, "img.jpg")
-    if s_out.isalnum():
-        await message.reply('Красивенько 😍')
+    s_out = img_to_str(model, "img.jpg")
+    s_out = str(s_out)
+    try:
+        if s_out[0].isalpha() or s_out[0].isdigit():
+            await message.reply('Красивенько 😍')
+    except IndexError:
+        await message.reply('тут пусто')
 
 
 def register_message_handlers(r: Router):
