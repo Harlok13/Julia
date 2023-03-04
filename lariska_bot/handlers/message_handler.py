@@ -3,58 +3,51 @@ from aiogram.filters import Text
 from aiogram.types import Message
 
 from lariska_bot.handlers.handlers_data.messages import *
-from lariska_bot.keyboards.lybrary_inline_kb import *
+
+
 # from lariska_bot.text_recogn_start import *
-
-r = Router()
-
-
-async def get_library(message: types.Message):
-    await message.answer(text='Выберите категорию:',
-                         reply_markup=CAT_CHOICE_MENU)
-    await message.delete()
 
 
 async def skirmish_reply(message: Message):
-    await message.reply(user_mes['dont_skirmish'])
+    await message.reply(USER_MSG['dont_skirmish'])
 
 
 async def call_names_reply(message: Message):
-    await message.reply(user_mes['dont_call_names'])
+    await message.reply(USER_MSG['dont_call_names'])
 
 
 async def attack_reply(message: Message):
-    await message.reply(user_mes['get_attack_reply'])
+    await message.reply(USER_MSG['get_attack_reply'])
 
 
 async def hello_where_to_reply(message: Message):
-    await message.reply(user_mes['get_hello'])
-    await message.answer(user_mes['get_start_here'])
-    await message.answer(user_mes['get_start_video'])
-    await message.answer('Там много полезных ссылок под видео.')
+    await message.reply(USER_MSG['get_hello'])
+    await message.answer(USER_MSG['get_start_here'])
+    await message.answer(USER_MSG['get_start_video'])
+    await message.answer(USER_MSG['about_links'])
 
 
 async def hello_reply(message: Message):
-    await message.reply(user_mes['get_hello'])
+    await message.reply(USER_MSG['get_hello'])
 
 
 async def where_to_begin(message: Message):
-    await message.reply(user_mes['get_start_here'])
-    await message.answer(user_mes['get_start_video'])
-    await message.answer(user_mes['about_links'])
+    await message.reply(USER_MSG['get_start_here'])
+    await message.answer(USER_MSG['get_start_video'])
+    await message.answer(USER_MSG['about_links'])
 
 
 async def our_repository_reply(message: Message):
-    await message.reply(user_mes['get_repo'])
+    await message.reply(USER_MSG['get_repo'])
 
 
 async def our_repo_reply(message: Message):
-    await message.reply(user_mes['get_repo'])
+    await message.reply(USER_MSG['get_repo'])
 
 
 async def lariska_bot_reply(message: Message):
-    await message.reply(user_mes['get_lariska_bot'])
-    await message.answer(user_mes['get_forks'])
+    await message.reply(USER_MSG['get_lariska_bot'])
+    await message.answer(USER_MSG['get_forks'])
 
 
 # aiogram2
@@ -62,7 +55,7 @@ async def lariska_bot_reply(message: Message):
 # @dp.throttled(flood_controlling, rate=5)
 # async def text_reply(message: types.Message):
 #     username = message.from_user.username
-#     user_dict = users.get(username)
+#     user_dict = USERS.get(username)
 #
 #     tz = pytz.timezone('Europe/Moscow')
 #     present_date = datetime.now(tz)
@@ -87,8 +80,6 @@ async def photo_reply(message: types.Message, bot: Bot):
 
 
 def register_message_handlers(r: Router):
-    r.message.register(get_library, F.text == 'БИБЛИОТЕКА')
-
     r.message.register(skirmish_reply, Text(contains=['говно'], ignore_case=True))
     r.message.register(call_names_reply, Text(contains=['лариска', 'дура'], ignore_case=True))
     r.message.register(attack_reply, Text(contains=['лариска', 'фас'], ignore_case=True))
