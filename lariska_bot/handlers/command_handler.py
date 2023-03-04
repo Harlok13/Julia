@@ -6,20 +6,18 @@ from lariska_bot.handlers.handlers_data.commands import *
 from lariska_bot.handlers.handlers_data.messages import *
 from lariska_bot.keyboards.reply_keyboard import *
 
-router = Router()
-
 
 async def repo_answer(message: Message):
-    await message.answer(get_repo())
+    await message.answer(user_mes['get_repo'])
 
 
 async def youtube_answer(message: Message):
-    await message.answer(get_youtube())
+    await message.answer(user_mes['get_youtube'])
 
 
 async def send_welcome(message: Message):
     await message.delete()
-    await message.answer(get_welcome(),
+    await message.answer(user_mes['get_welcome'],
                          parse_mode='MARKDOWN',
                          reply_markup=MENU_BOARD)
 
