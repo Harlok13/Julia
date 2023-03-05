@@ -1,174 +1,202 @@
 import logging
 
-from aiogram import types, F, Router
+import aiohttp
+from aiogram import F, Router
+from aiogram.filters import BaseFilter
+from aiogram.types import CallbackQuery
 from aioredis import Redis
 
-from lariska_bot.filters.library_filter import book_filter
-from lariska_bot.keyboards.lybrary_inline_kb import *
-from lariska_bot.keyboards.reply_keyboard import *
+from lariska_bot.apps.library.filters.library_filter import book_filter
+from lariska_bot.apps.library.keyboards.lybrary_inline_kb import *
+from lariska_bot.apps.library.lexicon.library_menu_lexicon import MENU_LEXICON
 
 redis = Redis()
 
 
-async def callback_get_prev(callback: types.CallbackQuery):
+async def callback_get_prev(callback: CallbackQuery) -> None:
     """Кнопка назад."""
     # prev = await redis.get('back')
-    await callback.message.edit_text(text='Выберите категорию:',
+    await callback.message.edit_text(text=MENU_LEXICON['main_menu'],
                                      reply_markup=CAT_CHOICE_MENU)
 
 
-async def callback_back_to_menu(callback: types.CallbackQuery):
+async def callback_back_to_menu(callback: CallbackQuery) -> None:
     """Кнопка вернуться в меню."""
-    await callback.message.edit_text(text='Выберите категорию:',
+    await callback.message.edit_text(text=MENU_LEXICON['main_menu'],
                                      reply_markup=CAT_CHOICE_MENU)
 
 
-async def callback_python_cat_info(callback: types.CallbackQuery):
+async def callback_python_cat_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории PYTHON."""
     logger = logging.getLogger(__name__)
-    await callback.message.edit_text(text='Выберите категорию Python',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_python'],
                                      reply_markup=PYTHON_CHOICE_MENU)
 
 
-async def callback_db_info(callback: types.CallbackQuery):
+async def callback_db_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории БАЗЫ ДАННЫХ"""
     logger = logging.getLogger(__name__)
-    await callback.message.edit_text(text='Выберите категорию баз данных',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_db'],
                                      reply_markup=DB_MENU)
 
 
-async def callback_nosql_info(callback: types.CallbackQuery):
+async def callback_nosql_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории NoSQL."""
-    await callback.message.edit_text(text='Выберите книгу по NoSQL',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_nosql'],
                                      reply_markup=NOSQL_MENU)
 
 
-async def callback_sql_info(callback: types.CallbackQuery):
+async def callback_sql_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории SQL."""
-    await callback.message.edit_text(text='Выберите книгу по SQL',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_sql'],
                                      reply_markup=SQL_MENU)
 
 
-async def callback_back_to_db(callback: types.CallbackQuery):
+async def callback_sql_helper(callback: CallbackQuery) -> None:
+    """Кнопка для выбора категории SQL."""
+    await callback.message.answer(text=MENU_LEXICON['choice_sql_helper'],
+                                  reply_markup=TY_MENU)
+
+
+async def callback_back_to_db(callback: CallbackQuery) -> None:
     """Кнопка возврата к категории БАЗЫ ДАННЫХ."""
-    await callback.message.edit_text(text='Выберите категорию баз данных',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_db'],
                                      reply_markup=DB_MENU)
 
 
-async def callback_back_to_pyhon(callback: types.CallbackQuery):
+async def callback_back_to_pyhon(callback: CallbackQuery) -> None:
     """Кнопка возврата к категории КНИГИ ПО PYTHON."""
-    await callback.message.edit_text(text='Выберите категорию Python',
+    await callback.message.edit_text(text=MENU_LEXICON['back_python'],
                                      reply_markup=PYTHON_CHOICE_MENU)
 
 
-async def callback_git_info(callback: types.CallbackQuery):
+async def callback_git_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории GIT."""
-    await callback.message.edit_text(text='Выберите книгу по GIT',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_git'],
                                      reply_markup=GIT_MENU)
 
 
-async def callback_start_book_info(callback: types.CallbackQuery):
+async def callback_start_book_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории КНИГИ ДЛЯ СТАРТА."""
-    await callback.message.edit_text(text='Выберите книгу для начинающих',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_for_starts'],
                                      reply_markup=START_BOOKS_MENU)
 
 
-async def callback_algorithms_info(callback: types.CallbackQuery):
+async def callback_algorithms_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории АЛГОРИТМЫ."""
-    await callback.message.edit_text(text='Выберите книгу по алгоритмам',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_algorithms'],
                                      reply_markup=ALGORITHMS_MENU)
 
 
-async def callback_linux_info(callback: types.CallbackQuery):
+async def callback_linux_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории LINUX."""
-    await callback.message.edit_text(text='Выберите книгу по LINUX',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_linux'],
                                      reply_markup=LINUX_MENU)
 
 
-async def callback_python_books_info(callback: types.CallbackQuery):
+async def callback_python_books_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории КНИГИ ПО PYTHON."""
     await callback.message.edit_text(text='Выберите книгу по PYTHON',
                                      reply_markup=PYTHON_MENU)
 
 
-async def callback_kids_info(callback: types.CallbackQuery):
+async def callback_kids_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории ДЛЯ САМЫХ МАЛЕНЬКИХ."""
-    await callback.message.edit_text(text='Выберите книгу для самых начинающих',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_kids'],
                                      reply_markup=KIDS_MENU)
 
 
-async def callback_async_info(callback: types.CallbackQuery):
+async def callback_async_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории АСИНХРОННЫЙ PYTHON."""
-    await callback.message.edit_text(text='Выберите книгу по async',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_async'],
                                      reply_markup=ASYNC_MENU)
 
 
-async def callback_django_info(callback: types.CallbackQuery):
+async def callback_django_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории DJANGO."""
-    await callback.message.edit_text(text='Выберите книгу по DJANGO',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_django'],
                                      reply_markup=DJANGO_MENU)
 
 
-async def callback_tests_info(callback: types.CallbackQuery):
+async def callback_tests_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории ТЕСТИРОВАНИЕ."""
-    await callback.message.edit_text(text='Выберите книгу по тестированию',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_tests'],
                                      reply_markup=TESTS_MENU)
 
 
-async def callback_pandas_info(callback: types.CallbackQuery):
+async def callback_pandas_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории PANDAS."""
     await callback.message.edit_text(text='Выберите книгу по PANDAS',
                                      reply_markup=PANDAS_MENU)
 
 
-async def callback_ml_info(callback: types.CallbackQuery):
+async def callback_ml_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории НЕЙРОСЕТИ."""
-    await callback.message.edit_text(text='Выберите книгу по нейросетям',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_ml'],
                                      reply_markup=ML_MENU)
 
 
-async def callback_recommendations_info(callback: types.CallbackQuery):
+async def callback_recommendations_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории РЕКОМЕНДАЦИИ."""
-    await callback.message.edit_text(text='ой, этот раздел пуст:( \n давайте добавим в него что-нибудь?',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_recommendation'],
                                      reply_markup=RECOMMEND_MENU)
     # await callback.message.edit_text(text='Выберите книгу из рекомендаций',
     #                                  reply_markup=RECOMMEND_MENU)
 
 
-async def callback_get_book(callback: types.CallbackQuery):
+class GetIdBook(BaseFilter):
+    async def __call__(self, callback: CallbackQuery):
+        data = callback.data + 'some'
+        return {'data': data}
+
+
+async def callback_get_book(callback: CallbackQuery, data) -> None:
     """Получить книгу из redis."""
     call = await redis.get(callback.data)
-    await callback.message.edit_text(text=f'{callback.data} Ваша книга:)\n{str(call).strip("b")}'.replace("'", ''),
+    print(data, 'GetIdBook')
+    print(callback.data, 'book')
+    await callback.message.edit_text(text=f'Ваша книга :)\n{str(call).strip("b")}'.replace("'", ''),
                                      reply_markup=BOOK_MENU)
 
 
-async def callback_grandfa_reviews(callback: types.CallbackQuery):
+async def callback_grandfa_reviews(callback: CallbackQuery) -> None:
     """Получить отзыв от дедов."""
     # call = await redis.get(callback.data)
     await callback.message.answer(text='деды явно знают больше\nждем от них ревью :)',
                                   reply_markup=TY_MENU)
 
 
-async def callback_about_book(callback: types.CallbackQuery):
+async def callback_about_book(callback: CallbackQuery, data) -> None:
     """Получить описание книги."""
     # call = await redis.get(callback.data)
+    print(callback.data)
+    print(data, 'Get')
     await callback.message.answer(text='описание в процессе)',
                                   reply_markup=ABOUT_BOOK_MENU)
 
 
-async def callback_say_ty(callback: types.CallbackQuery):
+async def callback_say_ty(callback: CallbackQuery) -> None:
     """Сказать спасибо и удалить сообщение."""
     await callback.message.delete()
 
 
-async def close_menu(callback: types.CallbackQuery):
+async def close_menu(callback: CallbackQuery) -> None:  # тут должна быть цитата
     """Закрыть меню."""
-    await callback.message.answer(text='надеюсь я смог помочь',
-                                  reply_markup=MENU_BOARD)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+                'http://api.forismatic.com/api/1.0/?method=getQuote&key=457653&format=json&lang=ru') as resp:
+            quote = await resp.json()
+    await callback.message.answer(text=quote['quoteText'],
+                                  reply_markup=praise_answer())
     await callback.message.delete()
 
 
-async def callback_go_to_cat(callback: types.CallbackQuery):
+async def callback_get_compliment(callback: CallbackQuery) -> None:
+    """Похвалить Лариску и удалить сообщение."""
+    await callback.message.delete()
+
+
+async def callback_go_to_cat(callback: CallbackQuery) -> None:
     """
     Назад к категориям (из ссылки на книгу).
     хардкод вариант
@@ -204,10 +232,11 @@ async def callback_go_to_cat(callback: types.CallbackQuery):
         await callback_ml_info(callback)
 
 
-def register_library_cb_handlers(r: Router):
+def register_library_cb_handlers(r: Router) -> None:
     r.callback_query.register(callback_db_info, F.data == 'db_cat')
     r.callback_query.register(callback_nosql_info, F.data == 'nosql_cat')
     r.callback_query.register(callback_sql_info, F.data == 'sql_cat')
+    r.callback_query.register(callback_sql_helper, F.data == 'sql_helper')
     r.callback_query.register(callback_git_info, F.data == 'git_cat')
     r.callback_query.register(callback_start_book_info, F.data == 'start_cat')
     r.callback_query.register(callback_algorithms_info, F.data == 'algorithms_cat')
@@ -231,8 +260,9 @@ def register_library_cb_handlers(r: Router):
     r.callback_query.register(callback_back_to_pyhon, F.data == 'go_python')
 
     r.callback_query.register(callback_grandfa_reviews, F.data == 'grandfa_cmd')
-    r.callback_query.register(callback_about_book, F.data == 'about_cmd')
+    r.callback_query.register(callback_about_book, F.data == 'about_cmd', GetIdBook())
     r.callback_query.register(callback_say_ty, F.data == 'ty')
+    r.callback_query.register(callback_get_compliment, F.data == 'compliment')
     r.callback_query.register(callback_go_to_cat, F.data == 'go_to_cat')
 
-    r.callback_query.register(callback_get_book, book_filter)  # должен быть последним
+    r.callback_query.register(callback_get_book, book_filter, GetIdBook())  # должен быть последним
