@@ -22,5 +22,9 @@ USER_MSG: Dict[str, str] = {
                    '\n`наш репозиторий`, `наша репа`,'
                    '\n`ютуб`, `youtube`, `video`,'
                    '\n`лариска дура`, `лариска бот`.',
-    'about_links': 'Там много полезных ссылок под видео.'
+    'about_links': 'Там много полезных ссылок под видео.',
+    'about_lariska_home': 'Я бот и поэтому мой домик здесь:\n'
+                          'https://github.com/Harlok13/LariskaBot-v2.0\n'
+                          'А здесь живет моя сестра:\n'
+                          'https://github.com/OldCodersClub/LariskaBot'
 }
