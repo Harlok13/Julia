@@ -8,7 +8,12 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.fsm.storage.redis import RedisStorage
 from aioredis import Redis
+from sqlalchemy import URL
 
+from lariska_bot.data import config_data
+from lariska_bot.data.base import BaseModel
+from lariska_bot.data.engine import create_async_engine, get_session_maker, proceed_schemas
+from lariska_bot.middlewares.mw_user_register_check import UserRegisterCheck
 # Импорт настроек apps. Должен быть выше остальных импортов.
 from lariska_bot.settings import *
 
@@ -22,8 +27,6 @@ if library:
 from lariska_bot.handlers.callback_handlers import register_callback_handlers
 from lariska_bot.handlers.message_handler import register_message_handlers
 from lariska_bot.handlers.command_handler import register_command_handler
-
-from utils.db_api.db_gino import db
 
 from lariska_bot.keyboards.set_menu import set_main_menu
 
@@ -50,6 +53,8 @@ async def main() -> None:
     dp: Dispatcher = Dispatcher(storage=RedisStorage.from_url(os.getenv('REDIS_DSN')))
 
     # register mw
+    dp.message.middleware(UserRegisterCheck())
+    dp.callback_query.middleware(UserRegisterCheck())
 
     # register router
     register_callback_handlers(dp)
@@ -64,16 +69,22 @@ async def main() -> None:
     # register bot cmd
     await set_main_menu(bot)
 
-    # postgres_url = URL.create(
-    #     "postgresql+asyncpg",
-    #     username=os.getenv("POSTGRES_USER"),
-    #     host=os.getenv('POSTGRES_HOST'),
-    #     database=os.getenv("POSTGRES_DB"),
-    #     port=int(os.getenv("POSTGRES_PORT") or 0),
-    #     password=os.getenv('POSTGRES_PASSWORD')
-    # )
+    # register postgres
+    postgres_url = URL.create(
+        "postgresql+asyncpg",
+        username=os.getenv("PG_USER"),
+        host=os.getenv('IP'),
+        database=os.getenv("DATABASE"),
+        port=int(os.getenv("") or 0),
+        password=os.getenv('PG_PASSWORD')
+    )
     # async_engine = create_async_engine(postgres_url)
     # session_maker = get_session_maker(async_engine)
+
+    async_engine = create_async_engine(postgres_url)
+    session_maker = get_session_maker(async_engine)
+    await proceed_schemas(async_engine, BaseModel.metadata)
+
 
     # try:
     #     if not config.webhook_domain:
@@ -95,7 +106,7 @@ async def main() -> None:
     #     await bot.session.close()
     #
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types(), session_maker=session_maker)
 
 
 if __name__ == '__main__':
