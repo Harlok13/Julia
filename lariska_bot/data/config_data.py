@@ -9,4 +9,4 @@ PG_USER = str(os.getenv('PG_USER'))
 PG_PASSWORD = str(os.getenv('PG_PASSWORD'))
 DATABASE = str(os.getenv('DATABASE'))
 
-POSTGRES_URI = f'postgresql://{PG_USER}:{PG_PASSWORD}@{IP}/{DATABASE}'
+POSTGRES_URI = f'postgresql+asyncpg://{PG_USER}:{PG_PASSWORD}@{IP}/{DATABASE}'
