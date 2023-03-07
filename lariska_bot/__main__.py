@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import os
+import asyncpg
+from asyncpg import Pool
 from dotenv import load_dotenv, find_dotenv
 
 from aiogram import Bot, Dispatcher
@@ -13,13 +15,18 @@ from sqlalchemy import URL
 from lariska_bot.data import config_data
 from lariska_bot.data.base import BaseModel
 from lariska_bot.data.engine import create_async_engine, get_session_maker, proceed_schemas
+# from lariska_bot.middlewares.mw_user_register_check import UserRegisterCheck
+from lariska_bot.middlewares.mw_db_connect import DbSession
 from lariska_bot.middlewares.mw_user_register_check import UserRegisterCheck
 # Импорт настроек apps. Должен быть выше остальных импортов.
 from lariska_bot.settings import *
+from lariska_bot.data.config_data import IP, PG_USER, PG_PASSWORD, DATABASE
 
 # from lariska_bot.config_reader import config
+if trigger_app:
+    from lariska_bot.apps.trigger.handlers.trigger_cmd_handler import register_trigger_message_handler
 
-if library:
+if library_app:
     from lariska_bot.apps.library.handlers.library_cb_handler import register_library_cb_handlers
     from lariska_bot.apps.library.handlers.library_msg_handler import register_library_msg_handlers
     from lariska_bot.apps.library.handlers.library_cmd_handler import register_library_cmd_handlers
@@ -31,6 +38,12 @@ from lariska_bot.handlers.command_handler import register_command_handler
 from lariska_bot.keyboards.set_menu import set_main_menu
 
 logger: logging.Logger = logging.getLogger(__name__)
+
+
+# async def create_pool() -> Pool:
+#     return await asyncpg.create_pool(user=PG_USER, password=PG_PASSWORD,
+#                                      database=DATABASE, host='127.0.0.1',
+#                                      port=5432, command_timeout=60)
 
 
 async def main() -> None:
@@ -52,19 +65,25 @@ async def main() -> None:
 
     dp: Dispatcher = Dispatcher(storage=RedisStorage.from_url(os.getenv('REDIS_DSN')))
 
+    # pool_connect = await create_pool()
+
     # register mw
     dp.message.middleware(UserRegisterCheck())
     dp.callback_query.middleware(UserRegisterCheck())
+    # dp.update.middleware.register(DbSession(pool_connect))
 
     # register router
     register_callback_handlers(dp)
     register_message_handlers(dp)
     register_command_handler(dp)
 
-    if library:
+    if library_app:
         register_library_cb_handlers(dp)
         register_library_msg_handlers(dp)
         register_library_cmd_handlers(dp)
+
+    if trigger_app:
+        register_trigger_message_handler(dp)
 
     # register bot cmd
     await set_main_menu(bot)
@@ -78,13 +97,10 @@ async def main() -> None:
         port=int(os.getenv("") or 0),
         password=os.getenv('PG_PASSWORD')
     )
-    # async_engine = create_async_engine(postgres_url)
-    # session_maker = get_session_maker(async_engine)
 
     async_engine = create_async_engine(postgres_url)
     session_maker = get_session_maker(async_engine)
-    await proceed_schemas(async_engine, BaseModel.metadata)
-
+    # await proceed_schemas(async_engine, BaseModel.metadata)
 
     # try:
     #     if not config.webhook_domain:
@@ -106,7 +122,11 @@ async def main() -> None:
     #     await bot.session.close()
     #
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types(), session_maker=session_maker)
+    await dp.start_polling(
+        bot,
+        allowed_updates=dp.resolve_used_update_types(),
+        session_maker=session_maker
+    )
 
 
 if __name__ == '__main__':
