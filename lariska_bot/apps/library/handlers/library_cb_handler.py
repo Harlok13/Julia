@@ -96,7 +96,7 @@ async def callback_linux_info(callback: CallbackQuery) -> None:
 
 async def callback_python_books_info(callback: CallbackQuery) -> None:
     """Кнопка для выбора категории КНИГИ ПО PYTHON."""
-    await callback.message.edit_text(text='Выберите книгу по PYTHON',
+    await callback.message.edit_text(text=MENU_LEXICON['choice_python_book'],
                                      reply_markup=PYTHON_MENU)
 
 
@@ -144,18 +144,12 @@ async def callback_recommendations_info(callback: CallbackQuery) -> None:
     #                                  reply_markup=RECOMMEND_MENU)
 
 
-class GetIdBook(BaseFilter):
-    async def __call__(self, callback: CallbackQuery):
-        data = callback.data + 'some'
-        return {'data': data}
-
 
 async def callback_get_book(callback: CallbackQuery, data) -> None:
     """Получить книгу из redis."""
     call = await redis.get(callback.data)
-    print(data, 'GetIdBook')
-    print(callback.data, 'book')
-    await callback.message.edit_text(text=f'Ваша книга :)\n{str(call).strip("b")}'.replace("'", ''),
+    await redis.set('save_book', f'd{callback.data}')
+    await callback.message.edit_text(text=f'{callback.data} Ваша книга :)\n{str(call).strip("b")}'.replace("'", ''),
                                      reply_markup=BOOK_MENU)
 
 
@@ -168,9 +162,6 @@ async def callback_grandfa_reviews(callback: CallbackQuery) -> None:
 
 async def callback_about_book(callback: CallbackQuery, data) -> None:
     """Получить описание книги."""
-    # call = await redis.get(callback.data)
-    print(callback.data)
-    print(data, 'Get')
     await callback.message.answer(text='описание в процессе)',
                                   reply_markup=ABOUT_BOOK_MENU)
 
@@ -202,7 +193,6 @@ async def callback_go_to_cat(callback: CallbackQuery) -> None:
     хардкод вариант
     """
     print(callback.message.text)
-    # if callback.data == '2':
     if callback.message.text.split()[0] in ('2',):
         await callback_nosql_info(callback)
     elif callback.message.text.split()[0] in ('11', '31', '9'):
@@ -260,9 +250,9 @@ def register_library_cb_handlers(r: Router) -> None:
     r.callback_query.register(callback_back_to_pyhon, F.data == 'go_python')
 
     r.callback_query.register(callback_grandfa_reviews, F.data == 'grandfa_cmd')
-    r.callback_query.register(callback_about_book, F.data == 'about_cmd', GetIdBook())
+    r.callback_query.register(callback_about_book, F.data == 'about_cmd')
     r.callback_query.register(callback_say_ty, F.data == 'ty')
     r.callback_query.register(callback_get_compliment, F.data == 'compliment')
     r.callback_query.register(callback_go_to_cat, F.data == 'go_to_cat')
 
-    r.callback_query.register(callback_get_book, book_filter, GetIdBook())  # должен быть последним
+    r.callback_query.register(callback_get_book, book_filter)  # должен быть последним
