@@ -1,3 +1,6 @@
+import asyncio
+from pprint import pprint
+
 from aiogram import Router, types, F, Bot
 from aiogram.filters import Text
 from aiogram.types import Message
@@ -27,8 +30,11 @@ async def hello_where_to_reply(message: Message):
     await message.answer(USER_MSG['about_links'])
 
 
-async def hello_reply(message: Message):
+async def hello_reply(message: Message, bot: Bot):
     await message.reply(USER_MSG['get_hello'])
+    print(message.message_id)
+    await asyncio.sleep(5)
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id+1)
 
 
 async def where_to_begin(message: Message):
@@ -79,7 +85,7 @@ async def photo_reply(message: types.Message, bot: Bot):
         await message.reply('тут пусто')
 
 
-def register_message_handlers(r: Router):
+def register_message_handlers(r: Router) -> None:
     r.message.register(skirmish_reply, Text(contains=['говно'], ignore_case=True))
     r.message.register(call_names_reply, Text(contains=['лариска', 'дура'], ignore_case=True))
     r.message.register(attack_reply, Text(contains=['лариска', 'фас'], ignore_case=True))
