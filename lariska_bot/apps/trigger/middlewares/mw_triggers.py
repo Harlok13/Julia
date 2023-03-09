@@ -6,7 +6,7 @@ from aiogram.filters import CommandObject
 from aiogram.types import Message, TelegramObject
 from sqlalchemy.orm import sessionmaker
 
-from lariska_bot.utils.db_connect import Request
+from lariska_bot.apps.trigger.utils.db_connect import Request
 
 
 class Trigger(BaseMiddleware):
