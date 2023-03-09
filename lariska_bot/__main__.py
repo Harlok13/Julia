@@ -1,26 +1,17 @@
 import asyncio
 import logging
 import os
-import asyncpg
-from asyncpg import Pool
 from dotenv import load_dotenv, find_dotenv
 
 from aiogram import Bot, Dispatcher
-from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.fsm.storage.redis import RedisStorage
-from aioredis import Redis
 from sqlalchemy import URL
 
-from lariska_bot.data import config_data
-from lariska_bot.data.base import BaseModel
-from lariska_bot.data.engine import create_async_engine, get_session_maker, proceed_schemas
-# from lariska_bot.middlewares.mw_user_register_check import UserRegisterCheck
-from lariska_bot.middlewares.mw_db_connect import DbSession
+from lariska_bot.apps.trigger.middlewares.mw_triggers import Trigger
+from lariska_bot.data.engine import create_async_engine, get_session_maker
 from lariska_bot.middlewares.mw_user_register_check import UserRegisterCheck
 # Импорт настроек apps. Должен быть выше остальных импортов.
 from lariska_bot.settings import *
-from lariska_bot.data.config_data import IP, PG_USER, PG_PASSWORD, DATABASE
 
 # from lariska_bot.config_reader import config
 if trigger_app:
@@ -70,6 +61,7 @@ async def main() -> None:
     # register mw
     dp.message.middleware(UserRegisterCheck())
     dp.callback_query.middleware(UserRegisterCheck())
+    dp.message.middleware(Trigger())
     # dp.update.middleware.register(DbSession(pool_connect))
 
     # register router
