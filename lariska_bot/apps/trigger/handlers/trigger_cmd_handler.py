@@ -4,12 +4,12 @@ from aiogram import Bot, Router, F
 from aiogram.filters import CommandObject, Command
 from aiogram.types import Message
 
-from lariska_bot.utils.db_connect import Request
+from lariska_bot.apps.trigger.utils.db_connect import Request
 
 
-async def add_trigger(message: Message, command: CommandObject, request: Request, bot: Bot) -> None:
-    name_trigger = command.args.replace(' ', '_')
-    print('command args ', command.args)
+async def add_trigger(message: Message, request: Request, bot: Bot) -> None:
+    """Добавить триггер в список."""
+    name_trigger = message.text.replace(' ', '_').replace('!', '')
     value_trigger = message.reply_to_message.message_id
     await request.db_add_trigger(name_trigger, value_trigger)
     await message.answer(f'Триггер "{name_trigger}" успешно добавлен для пользователя '
@@ -32,12 +32,11 @@ async def get_trigger(message: Message, request: Request):
 async def get_value(message: Message, request: Request, bot: Bot):
     values = await request.db_get_values(message.text.replace('#', ''))
     list_values = values.split('\r\n')
-
     for value in list_values:
         await bot.copy_message(message.chat.id, message.chat.id, int(value))
 
 
 def register_trigger_message_handler(r: Router):
-    r.message.register(add_trigger, Command(commands='add_trigger', magic=F.args), F.reply_to_message)
+    r.message.register(add_trigger, F.text.startswith('!'), F.reply_to_message)
     r.message.register(get_trigger, Command(commands='get_triggers'))
-    r.message.register(get_value, F.text.startswith('#'))
+    r.message.register(get_value, F.text.startswith('>'))
