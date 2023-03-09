@@ -144,8 +144,7 @@ async def callback_recommendations_info(callback: CallbackQuery) -> None:
     #                                  reply_markup=RECOMMEND_MENU)
 
 
-
-async def callback_get_book(callback: CallbackQuery, data) -> None:
+async def callback_get_book(callback: CallbackQuery) -> None:
     """Получить книгу из redis."""
     call = await redis.get(callback.data)
     await redis.set('save_book', f'd{callback.data}')
@@ -160,7 +159,7 @@ async def callback_grandfa_reviews(callback: CallbackQuery) -> None:
                                   reply_markup=TY_MENU)
 
 
-async def callback_about_book(callback: CallbackQuery, data) -> None:
+async def callback_about_book(callback: CallbackQuery) -> None:
     """Получить описание книги."""
     await callback.message.answer(text='описание в процессе)',
                                   reply_markup=ABOUT_BOOK_MENU)
