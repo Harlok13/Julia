@@ -21,8 +21,12 @@ async def add_trigger(message: Message, command: CommandObject, request: Request
 
 
 async def get_trigger(message: Message, request: Request):
+    """Получить список всех триггеров."""
     msg = await request.db_get_triggers()
-    await message.answer(msg, parse_mode='MARKDOWN')
+    if msg:
+        await message.answer(msg, parse_mode='MARKDOWN')
+    else:
+        await message.answer('Список триггеров пуст')
 
 
 async def get_value(message: Message, request: Request, bot: Bot):
