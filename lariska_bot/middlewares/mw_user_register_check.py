@@ -1,4 +1,5 @@
 import logging
+from pprint import pprint
 from typing import Any, Callable, Dict, Awaitable, Union
 
 from aiogram import BaseMiddleware
@@ -29,20 +30,13 @@ class UserRegisterCheck(BaseMiddleware):
 
                 if user is not None:
                     logger.info(f'Пользователь {event.from_user.username} уже зарегистрирован')
-                    # await event.answer('Вы уже зарегистрированы')
-
                 else:
                     user: User = User(
                         user_id=event.from_user.id,
                         username=event.from_user.username,
-                        name=event.from_user.first_name
+                        user_nickname=event.from_user.first_name
                     )
                     await session.merge(user)
-                    # if isinstance(event, Message):
-                    #     await event.answer('Ты успешно зарегистрирован(а)!')
-                    # else:
-                    #     await event.message.answer('Ты успешно зарегистрирован(а)!')
                     logger.info(f'Пользователь {event.from_user.username} зарегистрирован')
-                    # await event.answer('Успешная регистрация')
 
         return await handler(event, data)
