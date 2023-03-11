@@ -6,6 +6,6 @@ from lariska_bot.apps.trigger.utils.trigger_base import BaseModel
 class TriggerModel(BaseModel):
     __tablename__ = 'triggers_table'
 
-    id: Column = Column(Integer, autoincrement=True, primary_key=True)
+    trigger_id: Column = Column(Integer, autoincrement=True, primary_key=True)
     name_trigger: Column = Column(TEXT)
     value_trigger: Column = Column(TEXT)
