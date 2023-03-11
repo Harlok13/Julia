@@ -7,6 +7,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 from sqlalchemy import URL
 
+from lariska_bot.apps.library.handlers.lib_cb_test import register_library_cb_handler
+from lariska_bot.apps.library.middlewares.mw_library import LibraryMenu
 from lariska_bot.apps.trigger.middlewares.mw_triggers import Trigger
 from lariska_bot.data.engine import create_async_engine, get_session_maker
 from lariska_bot.middlewares.mw_user_register_check import UserRegisterCheck
@@ -59,6 +61,7 @@ async def main() -> None:
     # pool_connect = await create_pool()
 
     # register mw
+    dp.callback_query.middleware(LibraryMenu())
     dp.message.middleware(UserRegisterCheck())
     dp.callback_query.middleware(UserRegisterCheck())
     dp.message.middleware(Trigger())
@@ -70,7 +73,8 @@ async def main() -> None:
     register_command_handler(dp)
 
     if library_app:
-        register_library_cb_handlers(dp)
+        # register_library_cb_handlers(dp)
+        register_library_cb_handler(dp)  # тестовый
         register_library_msg_handlers(dp)
         register_library_cmd_handlers(dp)
 
