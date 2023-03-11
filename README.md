@@ -1,2 +1,3 @@
-# LariskaBot-v2.0
-the same bot, but with new functionality on aiogram3
+# Julia
+no description\
+for the time being
