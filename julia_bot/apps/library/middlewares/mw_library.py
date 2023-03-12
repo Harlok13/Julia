@@ -32,12 +32,12 @@ class LibraryMenu(BaseMiddleware):
                 logger.error(exc)
 
         # генерация меню с книгами
-        elif event.data in list(BOOK_IKB.keys()):
+        elif event.data in BOOK_IKB:
             async with session_maker() as session:
                 data['request'] = BookRequest(session, event.data)
 
         # сработает в случае, если cb data будет названием книги
-        elif event.data.isdigit():
+        elif event.data.isdigit() or '=' in event.data:
             async with session_maker() as session:
                 data['request'] = BookRequest(session, event.data)
                 # data['about_book_mw'] = event.data
