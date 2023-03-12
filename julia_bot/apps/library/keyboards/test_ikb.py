@@ -54,8 +54,8 @@ def choice_book(books_list: List[Tuple[str, int]], cb_data: str) -> InlineKeyboa
     return book_menu_builder.as_markup(resize_keyboard=True)
 
 
-def get_book_info(about_book: str) -> InlineKeyboardMarkup:
-
+def get_book_info(book_id: str, db_book_cb: str) -> InlineKeyboardMarkup:
+    """Взаимодействие с книгой (отзывы, содержание и т.д.)."""
     book_info_builder: InlineKeyboardBuilder = InlineKeyboardBuilder()
     buttons: List[InlineKeyboardButton] = [
         InlineKeyboardButton(
@@ -71,7 +71,20 @@ def get_book_info(about_book: str) -> InlineKeyboardMarkup:
     return book_info_builder.as_markup(resize_keyboard=True)
 
 
-def say_ty_menu():
+def say_ty_menu(answer: str, pagination=None) -> InlineKeyboardMarkup:
+    """  # , pagination: Optional[str, Dict[int, str]] = None
+    Закрыть сообщение. Если текста много, то создается пагинация.
+    :param pagination: give a dictionary with text to create pagination
+    :param answer: required, must be 'ty_cmd' or 'praise_cmd'. responsible for button text
+    :return: a button that closes the message or, if the text is long, then
+     also a button with pagination
+    """
+    ty_menu_build: InlineKeyboardBuilder = InlineKeyboardBuilder()
+    ty_button: InlineKeyboardButton = InlineKeyboardButton(
+        text=random.choice(TY_BUTTONS[answer]),
+        callback_data='del_cmd'  # ref
+    )
+    ty_menu_build.row(ty_button)
     # если текста очень много, то создается дополнительно
     # кнопка с пагинацией
     ...
