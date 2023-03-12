@@ -22,7 +22,6 @@ class BookRequest:
 
     async def db_get_book_link(self) -> str:
         """Получить ссылку на книгу."""
-        print(self.cb_data, 'db_get_book_link')
         async with self.session.begin():
             query: ChunkedIteratorResult = await self.session.execute(  # type: ignore
                 select(BookModel.link).where(BookModel.book_id == int(self.cb_data))
@@ -38,6 +37,15 @@ class BookRequest:
             )
             action: str = next(iter(query))[0]
         return action
+
+    async def db_get_prev(self, book_id: str) -> str:
+        async with self.session.begin():
+            query: ChunkedIteratorResult = await self.session.execute(  #type: ignore
+                text(f"SELECT cb_data FROM books WHERE book_id = '{book_id}'")
+            )
+            cb_data: str = next(iter(query))[0]
+        return cb_data
+
 
     async def db_check_books(self) -> List[str]:
         """Проверить бд и создать актуальный список книг."""
