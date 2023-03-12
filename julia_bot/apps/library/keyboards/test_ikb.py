@@ -34,23 +34,10 @@ def choice_book(books_list: List[Tuple[str, int]], cb_data: str) -> InlineKeyboa
             callback_data=id_book
         ) for title, id_book in books_list
     ]
-    print(buttons[0].callback_data, 'inodnlkdnnkldjhfkjnldkkdl;hr;k')
     book_menu_builder.add(*buttons)
+    # как отрефакторить?
+    book_menu_builder.row(InlineKeyboardButton(text='НАЗАД', callback_data='cat_choice_menu'))
     book_menu_builder.adjust(1)
-    ############# хардкод ###############
-    # if cb_data not in ('sql_cat', 'python_cat', 'nosql_cat'):
-    #     get_prev_button: InlineKeyboardButton = InlineKeyboardButton(
-    #         text='НАЗАД',
-    #         callback_data='cat_choice_menu'
-    #     )
-    #     book_menu_builder.add(get_prev_button)
-    # else:
-    #     get_prev_button: InlineKeyboardButton = InlineKeyboardButton(
-    #         text='ГЛАВНОЕ МЕНЮ',
-    #         callback_data='cat_choice_menu'
-    #     )
-    #     book_menu_builder.add(get_prev_button)
-    #######################################
     return book_menu_builder.as_markup(resize_keyboard=True)
 
 
