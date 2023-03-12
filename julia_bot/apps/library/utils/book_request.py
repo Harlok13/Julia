@@ -30,12 +30,11 @@ class BookRequest:
             link: str = next(iter(query))[0]
         return link
 
-    async def db_book_interaction(self, field: str, title: str) -> str:
+    async def db_book_interaction(self, field: str, book_id: str) -> str:
         """Взаимодействие с книгой."""
         async with self.session.begin():
             query: ChunkedIteratorResult = await self.session.execute(  # type: ignore
-                # select(BookModel.field).where(BookModel.name == title)
-                text(f"SELECT {field} FROM books WHERE title = '{title}'")
+                text(f"SELECT {field} FROM books WHERE book_id = '{book_id}'")
             )
             action: str = next(iter(query))[0]
         return action
