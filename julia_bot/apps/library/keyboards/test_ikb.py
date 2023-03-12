@@ -1,12 +1,13 @@
-from typing import Dict, List, Tuple, Union
+import random
+from typing import Dict, List, Tuple, Union, Optional
 
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from sqlalchemy import ChunkedIteratorResult
 
-from julia_bot.apps.library.lexicon.library_ikb_lexicon import MENU_IKB, OTHER_BUTTONS, BOOK_INFO_BUT
+from julia_bot.apps.library.lexicon.library_ikb_lexicon import MENU_IKB, BOOK_INFO_BUT, GO_MAIN_MENU, \
+    TY_BUTTONS
 from julia_bot.apps.library.utils.book_request import BookRequest
-
 
 
 def main_menu(ikb_data: str) -> InlineKeyboardMarkup:
@@ -19,13 +20,6 @@ def main_menu(ikb_data: str) -> InlineKeyboardMarkup:
             callback_data=tup[1]
         ) for tup in menu[:-1]
     ]
-    # if ikb_data != 'cat_choice_menu':
-    #     get_prev_but = InlineKeyboardButton(
-    #         text='НАЗАД',
-    #         callback_data=get_prev
-    #     )
-    #     main_menu_builder.add(get_prev_but)
-
     main_menu_builder.add(*buttons)
     main_menu_builder.adjust(*menu[-1])
     return main_menu_builder.as_markup(resize_keyboard=True)
@@ -66,10 +60,13 @@ def get_book_info(about_book: str) -> InlineKeyboardMarkup:
     buttons: List[InlineKeyboardButton] = [
         InlineKeyboardButton(
             text=tup[0],
-            callback_data=f"{tup[1]}={about_book}"
+            callback_data=f"{tup[1]}={book_id}"
         ) for tup in BOOK_INFO_BUT[:-1]
     ]
     book_info_builder.add(*buttons)
+    # как отрефакторить?
+    book_info_builder.row(InlineKeyboardButton(text='НАЗАД', callback_data=db_book_cb))
+    book_info_builder.row(InlineKeyboardButton(text=GO_MAIN_MENU['title'], callback_data=GO_MAIN_MENU['cb_data']))
     book_info_builder.adjust(*BOOK_INFO_BUT[-1])
     return book_info_builder.as_markup(resize_keyboard=True)
 
