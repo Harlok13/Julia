@@ -29,10 +29,10 @@ async def book_menu_cb(callback: CallbackQuery, request: BookRequest) -> None:
 async def book_info_cb(callback: CallbackQuery, request: BookRequest) -> None:
     """Получить книгу."""
     book: str = await request.db_get_book_link()
-    about_book: str = request.cb_data
-    print(book, 'book_info_cb')
+    book_id: str = request.cb_data
+    db_book_cb: str = await request.db_get_prev(callback.data)
     await callback.message.edit_text(text=f'Ваша книга: \n{book}',
-                                     reply_markup=get_book_info(about_book))
+                                     reply_markup=get_book_info(book_id, db_book_cb))
 
 
 async def book_interaction_cb(callback: CallbackQuery, request: BookRequest) -> None:
