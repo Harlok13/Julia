@@ -18,7 +18,7 @@ def library_menu_filter(callback: CallbackQuery) -> bool:
 
 def book_list_filter(callback: CallbackQuery) -> bool:
     """Фильтрация callback-ов, относящихся к списку книг"""
-    return callback.data in list(BOOK_IKB.keys())
+    return callback.data in BOOK_IKB
 
 
 def book_interaction_filter(callback: CallbackQuery) -> bool:
