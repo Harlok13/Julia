@@ -7,9 +7,10 @@ from aiogram.types import CallbackQuery
 from julia_bot.apps.library.filters.library_filter import library_menu_filter, book_list_filter, \
     book_interaction_filter, book_choice_filter
 from julia_bot.apps.library.keyboards.lybrary_inline_kb import praise_answer
-from julia_bot.apps.library.keyboards.test_ikb import main_menu, choice_book, get_book_info
+from julia_bot.apps.library.keyboards.test_ikb import main_menu, choice_book, get_book_info, say_ty_menu
 from julia_bot.apps.library.lexicon.library_menu_lexicon import MENU_LEXICON
 from julia_bot.apps.library.utils.book_request import BookRequest
+from julia_bot.apps.library.utils.library_textwrapper import text_wrapper
 
 
 async def library_menu_cb(callback: CallbackQuery, ikb_data: str) -> None:
@@ -50,7 +51,12 @@ async def close_menu_cb(callback: CallbackQuery) -> None:  # тут должна
                 'http://api.forismatic.com/api/1.0/?method=getQuote&key=457653&format=json&lang=ru') as resp:
             quote = await resp.json()
     await callback.message.answer(text=quote['quoteText'],
-                                  reply_markup=praise_answer())
+                                  reply_markup=say_ty_menu('praise_cmd'))
+    await callback.message.delete()
+
+
+async def del_message_cb(callback: CallbackQuery) -> None:
+    """Удалить сообщение, нажав на кнопку."""
     await callback.message.delete()
 
 
@@ -58,5 +64,6 @@ def register_library_cb_handler(router: Router) -> None:
     router.callback_query.register(library_menu_cb, library_menu_filter)
     router.callback_query.register(book_menu_cb, book_list_filter)
     router.callback_query.register(book_interaction_cb, book_interaction_filter)
-    router.callback_query.register(close_menu_cb, F.data == 'close')
+    router.callback_query.register(close_menu_cb, F.data == 'close')  # ref
+    router.callback_query.register(del_message_cb, F.data == 'del_cmd')  # ref
     router.callback_query.register(book_info_cb, book_choice_filter)
