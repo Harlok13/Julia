@@ -1,7 +1,7 @@
 import logging
 
 from aiogram.types import Message
-from aiogram import Router
+from aiogram import Router, F, Bot
 from aiogram.filters import Command, CommandStart
 
 from julia_bot.handlers.handlers_data.commands import *
@@ -11,26 +11,12 @@ from julia_bot.keyboards.inline_keyboard import TY_MENU
 from julia_bot.keyboards.reply_keyboard import *
 
 
-async def repo_answer(message: Message) -> None:
-    """Получить ссылку на репозиторий."""
+async def commands_answer(message: Message) -> None:
+    """Ответить на команды."""
     await message.delete()
-    await message.answer(USER_MSG['get_repo'],
-                         reply_markup=TY_MENU)
-
-
-async def youtube_answer(message: Message) -> None:
-    """Получить ссылку на ютуб."""
-    await message.delete()
-    await message.answer(USER_MSG['get_youtube'],
-                         reply_markup=TY_MENU)
-
-
-async def send_welcome(message: Message) -> None:
-    """Отправить приветственное сообщение."""
-    await message.delete()
-    await message.answer(USER_MSG['get_welcome'],
-                         parse_mode='MARKDOWN',
-                         reply_markup=MENU_BOARD)
+    await message.answer(text=COMMANDS_ANSWER[message.text.strip('/')],
+                         # parse_mode='HTML',
+                         reply_markup=TY_MENU)  # ref kb?
 
 
 async def help_answer(message: Message) -> None:
@@ -40,20 +26,20 @@ async def help_answer(message: Message) -> None:
                          # parse_mode='MARKDOWN',
                          reply_markup=TY_MENU)
 
-
-async def aboutme_answer(message: Message) -> None:
-    """Отправить местоположение Лариски."""
+async def feedback_answer(message: Message, bot: Bot) -> None:
+    """Отправить сообщение с помощью по боту."""
+    logging.basicConfig(
+        level='INFO',
+        filename='feedback.log'
+    )
     logger = logging.getLogger(__name__)
-    logger.info(message.from_user.first_name)
-    await message.delete()
-    await message.answer(USER_MSG['about_lariska_home'],
-                         parse_mode='MARKDOWN',
+    logger.info(message.text)
+    await message.answer(f"Спасибо, {message.from_user.first_name}, ваше сообщение успешно отправлено!",
+                         # parse_mode='MARKDOWN',
                          reply_markup=TY_MENU)
 
 
 def register_command_handler(router: Router) -> None:
-    router.message.register(repo_answer, Command(commands=get_repo_list()))
-    router.message.register(youtube_answer, Command(commands=get_video_list()))
-    router.message.register(help_answer, Command(commands='help'))
-    router.message.register(aboutme_answer, Command(commands='aboutme'))
-    router.message.register(send_welcome, CommandStart())
+    router.message.register(feedback_answer, Command(commands=['feedback', 'f'], magic=F.args))  # ref filter
+    router.message.register(commands_answer, Command(commands=list(COMMANDS_ANSWER.keys())))  # ref filter
+    router.message.register(help_answer, Command(commands='help'))  # ref filter
