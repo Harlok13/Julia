@@ -1,8 +1,9 @@
 from typing import Dict, List, Tuple, Union
 
-
 GET_PREV_DATA = 'cat_choice_menu'
 TO_MENU_DATA = 'cat_choice_menu'
+GO_DB = 'db_cat'
+GO_PYTHON = 'python_cat'
 
 # кортеж с числами отвечает за расположение кнопок в ряду
 MENU_IKB: Dict[str, List[Union[Tuple[str, str], Tuple[int]]]] = {
@@ -36,13 +37,22 @@ MENU_IKB: Dict[str, List[Union[Tuple[str, str], Tuple[int]]]] = {
          (1,)],
 }
 
-BOOK_IKB = (
-    'sql_cat', 'nosql_cat', 'pybook_cat',
-    'kids_cat', 'async_cat', 'django_cat',
-    'tests_cat', 'pandas_cat', 'ml_cat',
-    'linux_cat', 'algorithms_cat', 'git_cat',
-    'start_cat', 'recommendations_cat'
-)
+BOOK_IKB: Dict[str, str] = {
+    'sql_cat': GO_DB,
+    'nosql_cat': GO_DB,
+    'pybook_cat': GO_PYTHON,
+    'kids_cat': GO_PYTHON,
+    'async_cat': GO_PYTHON,
+    'django_cat': GO_PYTHON,
+    'tests_cat': GO_PYTHON,
+    'pandas_cat': GO_PYTHON,
+    'ml_cat': GO_PYTHON,
+    'linux_cat': GET_PREV_DATA,
+    'algorithms_cat': GET_PREV_DATA,
+    'git_cat': GET_PREV_DATA,
+    'start_cat': GET_PREV_DATA,
+    'recommendations_cat': GET_PREV_DATA
+}
 
 TY_BUTTONS: Dict[str, Tuple[str]] = {  # type: ignore
     'ty_cmd': ('СПАСИБО!',
@@ -56,17 +66,13 @@ TY_BUTTONS: Dict[str, Tuple[str]] = {  # type: ignore
                    'Julia, ты такая умная...')
 }
 
-
-
-
-
 # cb data должна называться так же как и поля в бд
-BOOK_INFO_BUT = [
+BOOK_INFO_BUT = (
     ('ПОДРОБНЕЕ О КНИГЕ', 'description'),
     ('ОТЗЫВЫ ДЕДОВ', 'reviews'),
     ('СОДЕРЖАНИЕ', 'content'),
     (1,)
-]
+)
 
 GO_MAIN_MENU = {
     'title': 'ГЛАВНОЕ МЕНЮ',
