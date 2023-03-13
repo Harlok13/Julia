@@ -1,16 +1,13 @@
-from pprint import pprint
-import textwrap as tw
 from typing import Union, Dict
 
 
-def text_wrapper(text: str) -> Union[str, Dict[int, str]]:
+# ref
+def text_wrapper2(text: str, start: int, width: int):
     """Разделить текст на страницы."""
-    dedented_text: str = tw.dedent(text)
+    symbols = (',.!?:;')
+    res = max(text[start: width + start].rfind(i) for i in symbols)
+    return res + 1, text[start: res + start + 1]
 
-    if len(dedented_text) > 500:
-        cursor_start, page = 0, 1
-        short_text: str = '[...]'
-        dict_of_text: Dict[int, str] = {}
 
         while '[...]' in short_text:
             short_text: str = tw.shorten(text[cursor_start:], width=500)
