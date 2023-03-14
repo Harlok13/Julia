@@ -5,7 +5,8 @@ from aiogram import Bot, Router, F
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from julia_bot.apps.trigger.utils.db_connect import Request
+from julia_bot.apps.trigger.utils.trigger_request import Request
+from julia_bot.keyboards.inline_keyboard import TY_MENU
 
 
 async def add_trigger(message: Message, request: Request, bot: Bot) -> None:
@@ -13,7 +14,7 @@ async def add_trigger(message: Message, request: Request, bot: Bot) -> None:
     name_trigger: str = message.text.replace(' ', '_').replace('!', '')
     value_trigger: int = message.reply_to_message.message_id
     await request.db_add_trigger(name_trigger, value_trigger)
-    await message.answer(f'Триггер "{name_trigger}" успешно добавлен для пользователя '
+    await message.answer(f'Заметка "{name_trigger}" успешно добавлена для пользователя '
                          f'"{message.from_user.first_name}"')
     await asyncio.sleep(3)
     # получаем сообщение бота
@@ -24,16 +25,22 @@ async def add_trigger(message: Message, request: Request, bot: Bot) -> None:
 async def get_trigger(message: Message, request: Request) -> None:
     """Получить список всех триггеров."""
     msg: str = await request.db_get_triggers()
+    await message.delete()
     if msg:
-        await message.answer(msg, parse_mode='MARKDOWN')
+        await message.answer(f'Список заметок:\n{msg}\n`______________________`\n'
+                             f'Удаление заметки: \n!название',  # ref
+                             parse_mode='MARKDOWN',
+                             reply_markup=TY_MENU)  # ref
     else:
-        await message.answer('Список триггеров пуст')
+        await message.answer('Список заметок пуст',
+                             reply_markup=TY_MENU)
 
 
 async def get_value(message: Message, request: Request, bot: Bot) -> None:
     """Получить значение триггера."""
     values: str = await request.db_get_values(message.text.replace('>', ''))
     list_values: List[str] = values.split('\r\n')
+    await message.delete()
     for value in list_values:
         await bot.copy_message(message.chat.id, message.chat.id, int(value),
                                reply_markup=TY_MENU)
