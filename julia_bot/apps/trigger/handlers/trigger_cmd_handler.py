@@ -60,6 +60,6 @@ async def del_trigger(message: Message, request: Request, bot: Bot) -> None:
 
 def register_trigger_message_handler(r: Router) -> None:
     r.message.register(add_trigger, F.text.startswith('!'), F.reply_to_message)
-    r.message.register(get_trigger, Command(commands='get_triggers'))
+    r.message.register(get_trigger, Command(commands='get_notes'))
     r.message.register(get_value, F.text.startswith('>'))
     r.message.register(del_trigger, F.text.startswith('!'))
