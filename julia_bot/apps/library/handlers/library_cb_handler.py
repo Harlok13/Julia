@@ -42,9 +42,27 @@ async def book_interaction_cb(callback: CallbackQuery, request: BookRequest) -> 
     """Взаимодействие с книгой (описание, отзывы, содержание и пр.)."""
     field, book_id = request.cb_data.split('=')
     action: str = await request.db_book_interaction(field, book_id)
-    pagination = get_dict(action, 500)
-    await callback.message.answer(text=pagination[1],
-                                  reply_markup=say_ty_menu('ty_cmd', pagination))
+    global dict_with_pages
+    max_size_page: int = 500
+    dict_with_pages = get_pages_dict(action, max_size_page, field[0])
+    await callback.message.answer(text=dict_with_pages[f'{field[0]}1'],
+                                  reply_markup=say_ty_menu('ty_cmd', field[0], dict_with_pages))
+
+
+# ref
+async def get_pagination_cb(callback: CallbackQuery) -> None:
+    """Управление пагинацией."""
+    global dict_with_pages
+    if callback.data != 's999' and callback.data != 's0':
+        try:
+            await callback.message.edit_text(text=dict_with_pages[callback.data],
+                                             reply_markup=get_pagination_ikb(callback, dict_with_pages))
+        except KeyError:
+            await callback.answer(PAGINATION['error'])
+    elif callback.data == 's0':
+        await callback.answer(PAGINATION['count_pages'])
+    else:
+        await callback.answer(PAGINATION['last_page'])
 
 
 # это вынести отдельно. разделить сессию и апишку
