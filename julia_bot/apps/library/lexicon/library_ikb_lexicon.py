@@ -1,9 +1,9 @@
 from typing import Dict, List, Tuple, Union
 
-GET_PREV_DATA = 'cat_choice_menu'
-TO_MENU_DATA = 'cat_choice_menu'
-GO_DB = 'db_cat'
-GO_PYTHON = 'python_cat'
+GET_PREV_DATA: str = 'cat_choice_menu'
+TO_MENU_DATA: str = 'cat_choice_menu'
+GO_DB: str = 'db_cat'
+GO_PYTHON: str = 'python_cat'
 
 # кортеж с числами отвечает за расположение кнопок в ряду
 MENU_IKB: Dict[str, List[Union[Tuple[str, str], Tuple[int]]]] = {
@@ -74,7 +74,12 @@ BOOK_INFO_BUT = (
     (1,)
 )
 
-GO_MAIN_MENU = {
+GO_MAIN_MENU: Dict[str, str] = {
     'title': 'ГЛАВНОЕ МЕНЮ',
     'cb_data': TO_MENU_DATA
+}
+
+PAGINATION_BUT: Dict[str, str] = {
+    'backward': '<<',
+    'forward': '>>'
 }
