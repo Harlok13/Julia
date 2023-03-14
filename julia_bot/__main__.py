@@ -33,12 +33,6 @@ from julia_bot.keyboards.set_menu import set_main_menu
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-# async def create_pool() -> Pool:
-#     return await asyncpg.create_pool(user=PG_USER, password=PG_PASSWORD,
-#                                      database=DATABASE, host='127.0.0.1',
-#                                      port=5432, command_timeout=60)
-
-
 async def main() -> None:
     logging.basicConfig(
         level='INFO',
@@ -58,14 +52,11 @@ async def main() -> None:
 
     dp: Dispatcher = Dispatcher(storage=RedisStorage.from_url(os.getenv('REDIS_DSN')))
 
-    # pool_connect = await create_pool()
-
     # register mw
     dp.callback_query.middleware(LibraryMenu())
     dp.message.middleware(UserRegisterCheck())
     dp.callback_query.middleware(UserRegisterCheck())
     dp.message.middleware(Trigger())
-    # dp.update.middleware.register(DbSession(pool_connect))
 
     # register router
     register_callback_handlers(dp)
