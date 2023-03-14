@@ -21,18 +21,24 @@ def _text_wrapper(text: str, start: int, page_size: int) -> 'PageText':  # type:
     return page_with_text
 
 
-# ref
-def get_dict(text, size):
-    d = {}
-    cursor = 0
-    page = 1
-    while cursor < len(text) - 1:
-        if len(text[cursor:]) > size:
-            t = text_wrapper2(text, cursor, size)
-            d.setdefault(page, t[1])
-            cursor += t[0]
+def get_pages_dict(text: str, page_size: int, field: str) -> Dict[str, str]:
+    """
+    Get a dictionary with page numbers and the text of those pages.
+
+    :param text: text to be paginated
+    :param page_size: maximum allowable page size
+    :param field: the name of db field, then this name will be used as callback data
+    :return: dictionary with page numbers and the text of those pages
+    """
+    pages_dict: Dict[str, str] = {}
+    cursor_start, page = 0, 1
+    while cursor_start < len(text) - 1:
+        if len(text[cursor_start:]) > page_size:
+            page_with_text: 'PageText' = _text_wrapper(text, cursor_start, page_size)  # type: ignore
+            pages_dict.setdefault(f'{field}{page}', page_with_text.text)
+            cursor_start += page_with_text.page
             page += 1
         else:
-            d.setdefault(page, text[cursor:])
+            pages_dict.setdefault(f'{field}{page}', text[cursor_start:])
             break
-    return d
+    return pages_dict
