@@ -35,10 +35,24 @@ async def get_value(message: Message, request: Request, bot: Bot) -> None:
     values: str = await request.db_get_values(message.text.replace('>', ''))
     list_values: List[str] = values.split('\r\n')
     for value in list_values:
-        await bot.copy_message(message.chat.id, message.chat.id, int(value))
+        await bot.copy_message(message.chat.id, message.chat.id, int(value),
+                               reply_markup=TY_MENU)
+
+
+async def del_trigger(message: Message, request: Request, bot: Bot) -> None:
+    """Удалить триггер."""
+    name: str = message.text.replace('!', '').replace(' ', '_')
+    await request.db_del_trigger(name)
+    # fix cuz removes non-existent triggers
+    await message.answer(f'Заметка "{name}" для пользователя '
+                         f'"{message.from_user.first_name}" удалена!')
+    await asyncio.sleep(3)
+    message_for_del: int = message.message_id + 1
+    await bot.delete_message(message.chat.id, message_for_del)
 
 
 def register_trigger_message_handler(r: Router) -> None:
     r.message.register(add_trigger, F.text.startswith('!'), F.reply_to_message)
     r.message.register(get_trigger, Command(commands='get_triggers'))
     r.message.register(get_value, F.text.startswith('>'))
+    r.message.register(del_trigger, F.text.startswith('!'))
