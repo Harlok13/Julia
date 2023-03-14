@@ -1,4 +1,4 @@
-from sqlalchemy import text, select, insert
+from sqlalchemy import text, select, delete
 from sqlalchemy.orm import sessionmaker
 
 from julia_bot.apps.trigger.utils.trigger_schemas import TriggerModel
@@ -30,3 +30,15 @@ class Request:  # NoteRequest
                 select(TriggerModel.value_trigger).where(TriggerModel.name_trigger == name_trigger)
             )
             return next(result)[0]
+
+    async def db_del_trigger(self, name_trigger: str) -> None:
+        """Удалить триггер."""
+        async with self.session.begin():
+            query: CursorResult = await self.session.execute(  # type: ignore
+                delete(TriggerModel).where(TriggerModel.name_trigger == name_trigger)
+            )
+            # если такого триггера нет, то предупреждать пользователя
+
+    async def db_upd_trigger(self, name_trigger: str) -> None:
+        """Обновить название триггера."""
+        ...
