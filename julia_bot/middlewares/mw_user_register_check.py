@@ -1,10 +1,10 @@
+import datetime
 import logging
-from pprint import pprint
 from typing import Any, Callable, Dict, Awaitable, Union
 
 from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery
-from sqlalchemy import select, ScalarResult
+from sqlalchemy import select, ScalarResult, update
 from sqlalchemy.orm import sessionmaker
 
 from julia_bot.data.schemas.user import User
@@ -30,6 +30,10 @@ class UserRegisterCheck(BaseMiddleware):
 
                 if user is not None:
                     logger.info(f'Пользователь {event.from_user.username} уже зарегистрирован')
+                    await session.execute(
+                        update(User).where(User.user_id == event.from_user.id).values(
+                            update_date=datetime.datetime.today())
+                    )
                 else:
                     user: User = User(
                         user_id=event.from_user.id,
