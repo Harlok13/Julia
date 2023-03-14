@@ -80,3 +80,22 @@ def say_ty_menu(answer: str, field=None, pagination=None) -> InlineKeyboardMarku
         ty_menu_build.row(prev_page).add(count_pages).add(next_page)
 
     return ty_menu_build.as_markup(resize_keyboard=True)
+
+
+def get_pagination_ikb(callback: CallbackQuery, dict_with_pages: dict) -> InlineKeyboardMarkup:
+    # сделать всплывающее уведомление о том, что это последняя страница
+    pagination_builder = InlineKeyboardBuilder()
+    field, num_of_page = list(callback.data)
+    prev_page_data = f'{field}{int(num_of_page) - 1}' if int(num_of_page) - 1 >= 1 else 's999'
+    next_page_data = f'{field}{int(num_of_page) + 1}' if int(num_of_page) + 1 <= len(dict_with_pages) else 's999'
+    prev_page = InlineKeyboardButton(text=PAGINATION_BUT['backward'], callback_data=prev_page_data)
+    next_page = InlineKeyboardButton(text=PAGINATION_BUT['forward'], callback_data=next_page_data)
+    count_pages = InlineKeyboardButton(text=f'{num_of_page}/{len(dict_with_pages)}', callback_data='s0')
+
+    ty_button: InlineKeyboardButton = InlineKeyboardButton(
+        text=random.choice(TY_BUTTONS['ty_cmd']),
+        callback_data='del_cmd'  # ref
+    )
+    pagination_builder.row(ty_button)
+    pagination_builder.row(prev_page, count_pages, next_page)
+    return pagination_builder.as_markup(resize_keyboard=True)
