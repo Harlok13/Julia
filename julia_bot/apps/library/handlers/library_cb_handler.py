@@ -15,6 +15,8 @@ from julia_bot.apps.library.lexicon.library_menu_lexicon import MENU_LEXICON, PA
 from julia_bot.apps.library.utils.book_request import BookRequest
 from julia_bot.apps.library.utils.library_textwrapper import get_pages_dict
 
+dict_with_pages = {}
+
 
 async def library_menu_cb(callback: CallbackQuery, ikb_data: str) -> None:
     """Меню выбора категории."""
@@ -31,13 +33,14 @@ async def book_menu_cb(callback: CallbackQuery, request: BookRequest, prev: str)
 
 async def book_info_cb(callback: CallbackQuery, request: BookRequest) -> None:
     """Получить книгу."""
-    book: str = await request.db_get_book_link()
+    book_link: str = await request.db_get_book_link()
     book_id: str = request.cb_data
     db_book_cb: str = await request.db_get_prev(callback.data)
-    await callback.message.edit_text(text=f'Ваша книга: \n{book}',
+    await callback.message.edit_text(text=f'{MENU_LEXICON["choice_book"]}\n{book_link}',
                                      reply_markup=get_book_info(book_id, db_book_cb))
 
 
+# ref
 async def book_interaction_cb(callback: CallbackQuery, request: BookRequest) -> None:
     """Взаимодействие с книгой (описание, отзывы, содержание и пр.)."""
     field, book_id = request.cb_data.split('=')
