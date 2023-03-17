@@ -7,7 +7,6 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 from sqlalchemy import URL
 
-from julia_bot.apps.library.handlers.lib_cb_test import register_library_cb_handler
 from julia_bot.apps.library.middlewares.mw_library import LibraryMenu
 from julia_bot.apps.trigger.middlewares.mw_triggers import Trigger
 from julia_bot.data.engine import create_async_engine, get_session_maker
@@ -21,7 +20,7 @@ if trigger_app:
 
 if library_app:
     from julia_bot.apps.library.handlers.library_cb_handler import register_library_cb_handlers
-    from julia_bot.apps.library.handlers.library_msg_handler import register_library_msg_handlers
+    # from julia_bot.apps.library.handlers.library_msg_handler import register_library_msg_handlers
     from julia_bot.apps.library.handlers.library_cmd_handler import register_library_cmd_handlers
 
 from julia_bot.handlers.callback_handlers import register_callback_handlers
@@ -64,9 +63,8 @@ async def main() -> None:
     register_command_handler(dp)
 
     if library_app:
-        # register_library_cb_handlers(dp)
-        register_library_cb_handler(dp)  # тестовый
-        register_library_msg_handlers(dp)
+        register_library_cb_handlers(dp)
+        # register_library_msg_handlers(dp)
         register_library_cmd_handlers(dp)
 
     if trigger_app:
