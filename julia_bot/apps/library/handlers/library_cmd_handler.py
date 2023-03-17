@@ -2,8 +2,7 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from julia_bot.apps.library.keyboards.lybrary_inline_kb import CAT_CHOICE_MENU
-from julia_bot.apps.library.keyboards.test_ikb import main_menu
+from julia_bot.apps.library.keyboards.lybrary_inline_kb import main_menu
 from julia_bot.apps.library.lexicon.library_cmd_lexicon import get_library
 from julia_bot.apps.library.lexicon.library_menu_lexicon import MENU_LEXICON
 
