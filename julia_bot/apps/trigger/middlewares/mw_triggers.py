@@ -6,7 +6,7 @@ from aiogram.filters import CommandObject
 from aiogram.types import Message, TelegramObject
 from sqlalchemy.orm import sessionmaker
 
-from julia_bot.apps.trigger.utils.db_connect import Request
+from julia_bot.apps.trigger.utils.trigger_request import Request
 
 
 class Trigger(BaseMiddleware):
