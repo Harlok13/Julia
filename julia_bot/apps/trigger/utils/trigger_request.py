@@ -8,11 +8,11 @@ class Request:  # NoteRequest
     def __init__(self, session: sessionmaker) -> None:
         self.session: sessionmaker = session
 
-    async def db_add_trigger(self, name_trigger: str, value_trigger: int) -> None:
+    async def db_add_trigger(self, name_trigger: str, value_trigger: int, user_id) -> None:
         """Добавить триггер."""
         async with self.session.begin():
-            query = f"INSERT INTO triggers_table (name_trigger, value_trigger)" \
-                    f" VALUES ('{name_trigger}', '{value_trigger}')"
+            query = f"INSERT INTO triggers_table (name_trigger, value_trigger, user_id)" \
+                    f" VALUES ('{name_trigger}', '{value_trigger}', '{user_id}')"
             await self.session.execute(text(query))  # type: ignore
 
     async def db_get_triggers(self) -> str:
