@@ -25,10 +25,11 @@ async def add_trigger(message: Message, request: Request, bot: Bot) -> None:
 
 async def get_trigger(message: Message, request: Request) -> None:
     """Получить список всех триггеров."""
-    msg: str = await request.db_get_triggers()
+    user_id: int = message.from_user.id
+    msg: str = await request.db_get_triggers(user_id)
     await message.delete()
     if msg:
-        await message.answer(f'Список заметок:\n{msg}\n`______________________`\n'
+        await message.answer(f'Список заметок для {message.from_user.first_name}:\n{msg}\n`______________________`\n'
                              f'Удаление заметки: \n!название',  # ref
                              parse_mode='MARKDOWN',
                              reply_markup=TY_MENU)  # ref
