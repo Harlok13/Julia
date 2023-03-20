@@ -15,11 +15,11 @@ class Request:  # NoteRequest
                     f" VALUES ('{name_trigger}', '{value_trigger}', '{user_id}')"
             await self.session.execute(text(query))  # type: ignore
 
-    async def db_get_triggers(self) -> str:
+    async def db_get_triggers(self, user_id: int) -> str:
         """Получить список триггеров."""
         async with self.session.begin():
             result_list: ChunkedIteratorResult = await self.session.execute(  # type: ignore
-                select(TriggerModel.name_trigger)
+                select(TriggerModel.name_trigger).where(TriggerModel.user_id == user_id)
             )
             return '\r\n'.join(f"`>{result[0]}`" for result in iter(result_list))
 
