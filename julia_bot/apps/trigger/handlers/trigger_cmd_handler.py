@@ -13,7 +13,8 @@ async def add_trigger(message: Message, request: Request, bot: Bot) -> None:
     """Добавить триггер в список."""
     name_trigger: str = message.text.replace(' ', '_').replace('!', '')
     value_trigger: int = message.reply_to_message.message_id
-    await request.db_add_trigger(name_trigger, value_trigger)
+    user_id: int = message.from_user.id
+    await request.db_add_trigger(name_trigger, value_trigger, user_id)
     await message.answer(f'Заметка "{name_trigger}" успешно добавлена для пользователя '
                          f'"{message.from_user.first_name}"')
     await asyncio.sleep(3)
