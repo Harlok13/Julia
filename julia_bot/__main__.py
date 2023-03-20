@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import os
+
+from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv, find_dotenv
 
 from aiogram import Bot, Dispatcher
@@ -49,7 +51,8 @@ async def main() -> None:
     # else:
     #     dp = Dispatcher(storage=MemoryStorage())
 
-    dp: Dispatcher = Dispatcher(storage=RedisStorage.from_url(os.getenv('REDIS_DSN')))
+    # dp: Dispatcher = Dispatcher(storage=RedisStorage.from_url(os.getenv('REDIS_DSN')))
+    dp: Dispatcher = Dispatcher(storage=MemoryStorage())
 
     # register mw
     dp.callback_query.middleware(LibraryMenu())
@@ -75,11 +78,11 @@ async def main() -> None:
 
     # register postgres
     postgres_url = URL.create(
-        "postgresql+asyncpg",
-        username=os.getenv("PG_USER"),
+        'postgresql+asyncpg',
+        username=os.getenv('PG_USER'),
         host=os.getenv('IP'),
-        database=os.getenv("DATABASE"),
-        port=int(os.getenv("") or 0),
+        database=os.getenv('DATABASE'),
+        port=int(os.getenv('') or 0),
         password=os.getenv('PG_PASSWORD')
     )
 
