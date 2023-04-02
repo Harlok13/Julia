@@ -41,3 +41,4 @@ tomli==2.0.1
 trio==0.22.0
 typing_extensions==4.5.0
 yarl==1.8.2
+alembic~=1.10.2
