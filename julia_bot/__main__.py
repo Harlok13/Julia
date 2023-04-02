@@ -1,13 +1,12 @@
 import asyncio
 import logging
-import os
 
 from aiogram.fsm.storage.memory import MemoryStorage
-from dotenv import load_dotenv, find_dotenv
-
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 from sqlalchemy import URL
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.orm import sessionmaker
 
 from julia_bot.apps.library.middlewares.mw_library import LibraryMenu
 from julia_bot.apps.trigger.middlewares.mw_triggers import Trigger
@@ -16,7 +15,8 @@ from julia_bot.middlewares.mw_user_register_check import UserRegisterCheck
 # Импорт настроек apps. Должен быть выше остальных импортов.
 from julia_bot.settings import *
 
-# from lariska_bot.config_reader import config
+from julia_bot.config_reader import config
+
 if trigger_app:
     from julia_bot.apps.trigger.handlers.trigger_cmd_handler import register_trigger_message_handler
 
@@ -42,9 +42,7 @@ async def main() -> None:
     )
     logger.info('is started')
 
-    load_dotenv(find_dotenv())
-    # bot = Bot(config.bot_token, parse_mode='HTML')
-    bot: Bot = Bot(os.getenv('BOT_TOKEN'), parse_mode='HTML')
+    bot = Bot(config.bot_token, parse_mode='HTML')
 
     # if config.fsm_mode == 'redis':
     #     dp = Dispatcher(storage=RedisStorage.from_url(config.redis_dsn))
