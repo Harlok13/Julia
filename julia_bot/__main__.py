@@ -44,13 +44,13 @@ async def main() -> None:
 
     bot = Bot(config.bot_token, parse_mode='HTML')
 
-    # if config.fsm_mode == 'redis':
-    #     dp = Dispatcher(storage=RedisStorage.from_url(config.redis_dsn))
-    # else:
-    #     dp = Dispatcher(storage=MemoryStorage())
-
-    # dp: Dispatcher = Dispatcher(storage=RedisStorage.from_url(os.getenv('REDIS_DSN')))
-    dp: Dispatcher = Dispatcher(storage=MemoryStorage())
+    match config.bot_fsm_storage:
+        case 'redis':
+            logger.info('redis enabled')
+            dp: Dispatcher = Dispatcher(storage=RedisStorage.from_url(config.redis_dsn))
+        case 'memory':
+            logger.info('memory enabled')
+            dp: Dispatcher = Dispatcher(storage=MemoryStorage())
 
     # register mw
     dp.callback_query.middleware(LibraryMenu())
