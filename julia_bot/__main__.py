@@ -48,7 +48,7 @@ async def main() -> None:
         case 'redis':
             logger.info('redis enabled')
             dp: Dispatcher = Dispatcher(storage=RedisStorage.from_url(config.redis_dsn))
-        case 'memory':
+        case _:
             logger.info('memory enabled')
             dp: Dispatcher = Dispatcher(storage=MemoryStorage())
 
