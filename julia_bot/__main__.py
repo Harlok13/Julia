@@ -53,7 +53,7 @@ async def main() -> None:
             dp: Dispatcher = Dispatcher(storage=MemoryStorage())
 
     # register mw
-    dp.callback_query.middleware(LibraryMenu())
+    dp.callback_query.middleware(LibraryMenu())  # type: ignore
     dp.message.middleware(UserRegisterCheck())
     dp.callback_query.middleware(UserRegisterCheck())
     dp.message.middleware(Trigger())
@@ -64,28 +64,22 @@ async def main() -> None:
     register_command_handler(dp)
 
     if library_app:
+        logger.info('library app enabled')
         register_library_cb_handlers(dp)
         # register_library_msg_handlers(dp)
         register_library_cmd_handlers(dp)
 
     if trigger_app:
+        logger.info('trigger app enabled')
         register_trigger_message_handler(dp)
 
     # register bot cmd
     await set_main_menu(bot)
 
-    # register postgres
-    postgres_url = URL.create(
-        'postgresql+asyncpg',
-        username=os.getenv('PG_USER'),
-        host=os.getenv('IP'),
-        database=os.getenv('DATABASE'),
-        port=int(os.getenv('') or 0),
-        password=os.getenv('PG_PASSWORD')
-    )
-
-    async_engine = create_async_engine(postgres_url)
-    session_maker = get_session_maker(async_engine)
+    # include postgres
+    async_engine: AsyncEngine = create_async_engine(config.postgres_dsn)
+    session_maker: sessionmaker = get_session_maker(async_engine)
+    # delegated alembic
     # await proceed_schemas(async_engine, BaseModel.metadata)
 
     # try:
