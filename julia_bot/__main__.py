@@ -82,31 +82,31 @@ async def main() -> None:
     # delegated alembic
     # await proceed_schemas(async_engine, BaseModel.metadata)
 
-    # try:
-    #     if not config.webhook_domain:
-    #         await bot.delete_webhook(drop_pending_updates=True)
-    #         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
-    #     else:
-    #         aiohttp_logger = logging.getLogger('aiohttp.access')
-    #         aiohttp_logger.setLevel(level='FATAL')
-    #
-    #         await bot.set_webhook(
-    #             url=f'{config.webhook_domain}{config.webhook_path}',
-    #             allowed_updates=dp.resolve_used_update_types(),
-    #             drop_pending_updates=True
-    #         )
-    #
-    #         # aiohttp app
-    #
-    # finally:
-    #     await bot.session.close()
-    #
-    await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(
-        bot,
-        allowed_updates=dp.resolve_used_update_types(),
-        session_maker=session_maker
-    )
+    try:
+        if not config.webhook_domain:
+            logger.info('webhook domain not set')
+            await bot.delete_webhook(drop_pending_updates=True)
+            await dp.start_polling(
+                bot,
+                allowed_updates=dp.resolve_used_update_types(),
+                session_maker=session_maker
+            )
+        else:
+            logger.info('webhook domain set')
+            aiohttp_logger = logging.getLogger('aiohttp.access')
+            aiohttp_logger.setLevel(level='FATAL')
+
+            await bot.set_webhook(
+                url=f'{config.webhook_domain}{config.webhook_path}',
+                allowed_updates=dp.resolve_used_update_types(),
+                drop_pending_updates=True
+            )
+
+            # aiohttp app
+
+    finally:
+        logger.info('finally closing connection')
+        await bot.session.close()
 
 
 if __name__ == '__main__':
@@ -114,3 +114,4 @@ if __name__ == '__main__':
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit) as exc:
         logger.error(exc)
+        logger.info('close connection')
