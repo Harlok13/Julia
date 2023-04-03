@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+pythonpath=[
+    ".", "julia_bot"
+]
+#asyncio_mode="auto"
