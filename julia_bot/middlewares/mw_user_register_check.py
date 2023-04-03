@@ -4,10 +4,14 @@ from typing import Any, Callable, Dict, Awaitable, Union
 
 from aiogram import BaseMiddleware
 from aiogram.types import Message, CallbackQuery
+from aioredis import Redis
 from sqlalchemy import select, ScalarResult, update
 from sqlalchemy.orm import sessionmaker
 
 from julia_bot.data.schemas.user import User
+from julia_bot.data.user_register import is_user_exists, register_user
+
+logger = logging.getLogger(__name__)
 
 
 class UserRegisterCheck(BaseMiddleware):
@@ -20,27 +24,22 @@ class UserRegisterCheck(BaseMiddleware):
             event: Union[Message, CallbackQuery],
             data: Dict[str, Any]
     ) -> Any:
-        logger = logging.getLogger(__name__)
         session_maker: sessionmaker = data['session_maker']
-        async with session_maker() as session:
-            async with session.begin():
-                result: ScalarResult = await session.execute(  # type: ignore
-                    select(User).where(User.user_id == event.from_user.id))  # type: ignore
-                user: User = result.one_or_none()
+        redis: Redis = data['redis']
 
-                if user is not None:
-                    logger.info(f'Пользователь {event.from_user.username} уже зарегистрирован')
-                    await session.execute(
-                        update(User).where(User.user_id == event.from_user.id).values(
-                            update_date=datetime.datetime.today())
-                    )
-                else:
-                    user: User = User(
-                        user_id=event.from_user.id,
-                        username=event.from_user.username,
-                        user_nickname=event.from_user.first_name
-                    )
-                    await session.merge(user)
-                    logger.info(f'Пользователь {event.from_user.username} зарегистрирован')
+        if await is_user_exists(
+                event.from_user.id,
+                event.from_user.first_name,
+                redis
+        ):
+            pass
+        else:
+            await register_user(
+                session_maker,
+                event.from_user.id,
+                event.from_user.username,
+                event.from_user.first_name,
+                redis
+            )
 
         return await handler(event, data)
