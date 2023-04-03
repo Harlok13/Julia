@@ -4,6 +4,7 @@ import logging
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
+from aioredis import Redis
 from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.orm import sessionmaker
@@ -43,6 +44,9 @@ async def main() -> None:
     logger.info('is started')
 
     bot = Bot(config.bot_token, parse_mode='HTML')
+
+    redis: Redis = Redis().from_url(config.redis_dsn)
+    logger.info(config.redis_dsn)
 
     match config.bot_fsm_storage:
         case 'redis':
@@ -89,7 +93,8 @@ async def main() -> None:
             await dp.start_polling(
                 bot,
                 allowed_updates=dp.resolve_used_update_types(),
-                session_maker=session_maker
+                session_maker=session_maker,
+                redis=redis
             )
         else:
             logger.info('webhook domain set')
