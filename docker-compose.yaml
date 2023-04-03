@@ -1,8 +1,28 @@
 version: '3.9'
 
 services:
+  redis:
+
+    image: redis:latest
+
+
+    env_file: .env
+    #    environment:
+    #      REDIS_DSN: $(REDIS_DSN)
+    restart: on-failure
+    ports:
+      - "6381:6381"
+
+    volumes:
+      - ./redis.conf:/etc/redis/redis.conf
+
+    command: "redis-server /etc/redis/redis.conf"
+
+
   julia:
-    image: harlok13/julia:0.1
+    image: harlok13/julia:0.4
+
+    build: .
 
     env_file: .env
 
@@ -10,9 +30,12 @@ services:
 
     depends_on:
       - db
+      - redis
+
+
 
   db:
-    image: postgres:15.2
+    image: postgres:15.2-bullseye
 
     environment:
       POSTGRES_USER: $(POSTGRES_USER)
