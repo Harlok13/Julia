@@ -3,7 +3,6 @@ from typing import Callable, Dict, Any, Awaitable
 
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
-from aioredis import Redis
 from sqlalchemy.orm import sessionmaker
 
 from julia_bot.apps.library.lexicon.library_ikb_lexicon import MENU_IKB, BOOK_IKB
@@ -22,7 +21,6 @@ class LibraryMenu(BaseMiddleware):
     ) -> Any:
         logger = logging.getLogger(__name__)
         session_maker: sessionmaker = data['session_maker']
-        data['redis']: Redis = Redis()
         # генерация категорий меню
         if event.data in list(MENU_IKB.keys()):
             try:
